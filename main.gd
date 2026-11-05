@@ -469,8 +469,11 @@ func _arayuz_kur() -> void:
 
 	mesaj_etiket = Label.new()
 	katman.add_child(mesaj_etiket)
-	mesaj_etiket.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	mesaj_etiket.offset_bottom = -200
+	mesaj_etiket.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	mesaj_etiket.offset_top = ust_bosluk + 120
+	mesaj_etiket.offset_bottom = ust_bosluk + 420
+	mesaj_etiket.offset_left = 30
+	mesaj_etiket.offset_right = -30
 	mesaj_etiket.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	mesaj_etiket.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	mesaj_etiket.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
