@@ -20,6 +20,7 @@ argv = sys.argv[sys.argv.index("--") + 1:]
 GIRDI, CIKTI, ONIZLEME = argv[0], argv[1], argv[2]
 FORMA, SORT, TOZLUK, KRAMPON = (ortak.hex_renk(x) for x in argv[3:7])
 KALECI = argv[7] == "1"
+BAS_KAYNAGI = argv[8] if len(argv) > 8 else ""
 
 TUT = {
     "Idle", "Unarmed_Idle", "Running_A", "Walking_A", "Unarmed_Melee_Attack_Kick",
@@ -37,6 +38,31 @@ for o in sil:
     bpy.data.objects.remove(o, do_unlink=True)
 
 arm = next(o for o in bpy.data.objects if o.type == "ARMATURE")
+print("tüm animasyon adları:", [a.name for a in bpy.data.actions][:12], "...")
+
+# --- İsteğe bağlı: başı başka karakterden al (aynı iskelet) ---
+if BAS_KAYNAGI:
+    once_nesne = set(bpy.data.objects)
+    once_anim = set(bpy.data.actions)
+    bpy.ops.import_scene.gltf(filepath=BAS_KAYNAGI)
+    yeni = [o for o in bpy.data.objects if o not in once_nesne]
+    yeni_bas = next(o for o in yeni if o.type == "MESH" and o.name.endswith("_Head")
+                    and any(m.type == "ARMATURE" for m in o.modifiers))
+    eski_bas = next(o for o in bpy.data.objects if o.type == "MESH" and o.name.endswith("_Head") and o not in yeni)
+    yeni_bas.parent = arm
+    yeni_bas.matrix_parent_inverse = eski_bas.matrix_parent_inverse.copy()
+    yeni_bas.matrix_basis = eski_bas.matrix_basis.copy()
+    for m in yeni_bas.modifiers:
+        if m.type == "ARMATURE":
+            m.object = arm
+    bpy.data.objects.remove(eski_bas, do_unlink=True)
+    for o in yeni:
+        if o is not yeni_bas:
+            bpy.data.objects.remove(o, do_unlink=True)
+    for a in list(bpy.data.actions):
+        if a not in once_anim:
+            bpy.data.actions.remove(a)
+    print("baş değiştirildi:", yeni_bas.name)
 parcalar = {o.name.split("_", 1)[-1]: o for o in bpy.data.objects if o.type == "MESH"}
 print("parçalar:", list(parcalar))
 
@@ -88,8 +114,6 @@ if "Body" in parcalar:
         t = (c.z - mn.z) / h
         if t < 0.26:
             return m_sort
-        if KALECI and 0.55 < t < 0.62:
-            return m_serit
         return m_forma
     boya(o, govde)
 
@@ -135,9 +159,27 @@ for ad in ("LegLeft", "LegRight"):
     boya(o, bacak)
 
 # --- Animasyonları ayıkla ---
+def taban_ad(ad):
+    """'Cheer', 'Rig|Cheer', 'Cheer_Rig', 'Cheer.001' gibi adlardan temel animasyon adını bulur."""
+    temiz = ad.split("|")[-1].split(".")[0]
+    for k in sorted(TUT, key=len, reverse=True):
+        if temiz == k:
+            return k
+    for k in sorted(TUT, key=len, reverse=True):
+        if temiz.startswith(k + "_") and not any(temiz.startswith(k2) for k2 in TUT if len(k2) > len(k)):
+            return k
+    return None
+
+
+gorulen = set()
 for a in list(bpy.data.actions):
-    if a.name not in TUT:
+    k = taban_ad(a.name)
+    if k is None or k in gorulen:
         bpy.data.actions.remove(a)
+    else:
+        gorulen.add(k)
+for a in bpy.data.actions:
+    a.name = taban_ad(a.name)
 print("kalan animasyonlar:", [a.name for a in bpy.data.actions])
 if arm.animation_data:
     for tr in list(arm.animation_data.nla_tracks):
@@ -174,7 +216,7 @@ for i, (anim, oran, konum) in enumerate([
     ("Dodge_Left", 0.45, (0, -boy * 3.0, boy * 0.7)),
     ("Cheer", 0.5, (boy * 1.0, -boy * 2.8, boy * 0.7)),
 ]):
-    act = bpy.data.actions.get(anim) if anim else bpy.data.actions.get("Idle")
+    act = next((a for a in bpy.data.actions if taban_ad(a.name) == (anim or "Idle")), None)
     arm.animation_data.action = act
     if act:
         s, e = act.frame_range

@@ -37,10 +37,11 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 > /dev/null
 
       - name: Saha nesneleri
+        if: ${{ !contains(github.event.head_commit.message, '[yalniz-karakter]') }}
         run: ./blender/blender -b --python tools/blender/saha.py -- assets/modeller onizleme 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
 
       - name: Futbolcu
-        run: ./blender/blender -b --python tools/blender/futbolcu.py -- assets/karakterler/Rogue.glb assets/modeller/oyuncu.glb onizleme/oyuncu "#c8102e" "#ffffff" "#c8102e" "#1a1a1a" 0 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
+        run: ./blender/blender -b --python tools/blender/futbolcu.py -- assets/karakterler/Rogue.glb assets/modeller/oyuncu.glb onizleme/oyuncu "#c8102e" "#ffffff" "#c8102e" "#1a1a1a" 0 assets/karakterler/Knight.glb 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
 
       - name: Kaleci
         run: ./blender/blender -b --python tools/blender/futbolcu.py -- assets/karakterler/Barbarian.glb assets/modeller/kaleci.glb onizleme/kaleci "#f2c500" "#1a1a1a" "#f2c500" "#1a1a1a" 1 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
