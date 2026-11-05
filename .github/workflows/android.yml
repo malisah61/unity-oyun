@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   android:
     runs-on: ubuntu-latest
@@ -53,3 +56,12 @@ jobs:
         with:
           name: PenaltiUstasi-APK
           path: build/android/PenaltiUstasi.apk
+
+      - name: Telefona kolay indirme için yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: son-surum
+          name: Penaltı Ustası (son sürüm)
+          body: Telefona indirip kurmak için aşağıdaki PenaltiUstasi.apk dosyasına dokun.
+          make_latest: true
+          files: build/android/PenaltiUstasi.apk
