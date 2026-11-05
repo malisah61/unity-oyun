@@ -18,9 +18,11 @@ KEEP = (".glb", ".gltf", ".bin", ".png", ".txt")
 for name in KENNEY:
     try:
         page = get(f"https://kenney.nl/assets/{name}").decode("utf-8", "ignore")
-        links = re.findall(r'https://kenney\.nl/media/pages/assets/[^"\']+\.zip', page)
+        links = re.findall(r'(?:https://kenney\.nl)?/media/pages/assets/[^"\'\s]+?\.zip', page)
+        links = [l if l.startswith("http") else "https://kenney.nl" + l for l in links]
         if not links:
-            report.append(f"kenney/{name}: zip linki yok"); continue
+            hints = sorted(set(re.findall(r'href="([^"]*(?:download|\.zip|media)[^"]*)"', page)))[:15]
+            report.append(f"kenney/{name}: zip linki yok; ipuçları: {hints}"); continue
         z = zipfile.ZipFile(io.BytesIO(get(links[0])))
         names = z.namelist()
         glbs = [n for n in names if n.lower().endswith((".glb", ".gltf"))]
@@ -42,8 +44,8 @@ for name in KENNEY:
 
 # ---------- Poly Haven (CC0) ----------
 try:
-    tex = json.loads(get("https://api.polyhaven.com/assets?t=textures&c=grass"))
-    report.append("polyhaven çim dokuları: " + ", ".join(sorted(tex)[:40]))
+    tex = json.loads(get("https://api.polyhaven.com/assets?t=textures"))
+    report.append("polyhaven çim dokuları: " + ", ".join(sorted(k for k in tex if "grass" in k or "turf" in k or "lawn" in k)))
     hdr = json.loads(get("https://api.polyhaven.com/assets?t=hdris&c=outdoor"))
     sky = [k for k in hdr if any(w in k for w in ("stadium", "pitch", "field", "sky", "meadow"))]
     report.append("polyhaven gökyüzü adayları: " + ", ".join(sorted(sky)[:40]))
