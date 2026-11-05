@@ -1,18 +1,18 @@
-# Penaltı Ustası (Unity)
+# Penaltı Ustası 3D (Godot)
 
-Bulutta derlenen basit bir Unity Android oyunu. Topu parmağınla kaleye doğru kaydır, kaleciyi geç. 5 şutta en çok golü at.
+Telefonda oynanan 3D penaltı oyunu. Ekranda parmağını yukarı doğru kaydır:
+yön sağ/sol, kaydırma uzunluğu yüksekliği, hızın da şut gücünü belirler.
+5 şutta en çok golü atmaya çalış; her golde kaleci daha iyi tahmin eder.
 
-## Nasıl derlenir
-Her `main` dalına gönderimde GitHub Actions projeyi derler. APK, Actions sekmesinde ilgili çalıştırmanın altında **PenaltiUstasi-APK** olarak indirilir.
+## APK nasıl alınır
+Her `main` gönderiminde GitHub Actions oyunu bulutta derler.
+**Actions** sekmesi → son çalıştırma → en altta **PenaltiUstasi-APK** → indir, zip'i aç, APK'yı telefona kur.
+(Bilinmeyen kaynaklardan yüklemeye izin vermen gerekebilir.)
 
-## Bir kerelik kurulum (Unity lisansı)
-Depo → Settings → Secrets and variables → Actions → New repository secret:
-- `UNITY_EMAIL` — Unity hesabının e-postası
-- `UNITY_PASSWORD` — Unity hesabının şifresi
-- `UNITY_LICENSE` — Unity Hub ile ücretsiz Personal lisansı etkinleştirdikten sonra oluşan `Unity_lic.ulf` dosyasının içeriği
-  (Windows: `C:\ProgramData\Unity\Unity_lic.ulf`)
+Lisans ya da bilgisayara kurulum gerekmez.
 
 ## Dosyalar
-- `Assets/Scripts/PenaltyGame.cs` — oyunun kendisi
-- `Assets/Editor/BuildScript.cs` — sahneyi kodla kurup APK çıkaran derleme betiği
-- `.github/workflows/android.yml` — bulut derleme ayarı
+- `main.gd` — oyunun tamamı (sahne kodla kuruluyor)
+- `main.tscn`, `project.godot` — Godot proje dosyaları
+- `export_presets.cfg` — Android dışa aktarma ayarı
+- `.github/workflows/android.yml` — bulut derleme
