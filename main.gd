@@ -14,7 +14,7 @@ const KARAKTER_BOY := 2.187  # KayKit modelinin Blender'daki boyu
 const OYUNCU_OLCEK := 1.8 / KARAKTER_BOY
 const KALECI_OLCEK := 1.9 / KARAKTER_BOY
 const KALECI_Z := KALE_Z + 0.45
-const KOSU_BAS := Vector3(-1.1, 0.0, 1.9)
+const KOSU_BAS := Vector3(-0.85, 0.0, 1.5)
 const KOSU_SON := Vector3(-0.32, 0.0, 0.55)
 const KOSU_SURE := 0.5
 const TEMAS_SURE := 0.36  # şut animasyonunda ayağın topa değdiği an
@@ -579,12 +579,12 @@ func _dunya_kur() -> void:
 	_kutu(Vector3(9.16, 0.006, KALE_Z + 2.75), Vector3(0.12, 0.012, 5.5), beyaz)
 	var nokta := MeshInstance3D.new()
 	var silindir := CylinderMesh.new()
-	silindir.top_radius = 0.16
-	silindir.bottom_radius = 0.16
-	silindir.height = 0.012
+	silindir.top_radius = 0.11
+	silindir.bottom_radius = 0.11
+	silindir.height = 0.004
 	silindir.material = _malzeme(beyaz)
 	nokta.mesh = silindir
-	nokta.position = Vector3(0, 0.006, 0)
+	nokta.position = Vector3(0, 0.003, 0)
 	add_child(nokta)
 	# Ceza yayı
 	for i in 24:
@@ -599,6 +599,15 @@ func _dunya_kur() -> void:
 	ag = kale.find_child("Ag", true, false) as Node3D
 	var tribun := _model("res://assets/modeller/tribun.glb")
 	tribun.position = Vector3(0, 0, KALE_Z)
+	# Çatının alt yüzü kameradan çok koyu görünüyor: açık metal tonu
+	for mi in tribun.find_children("*", "MeshInstance3D", true, false):
+		var mesh := (mi as MeshInstance3D).mesh
+		for i in mesh.get_surface_count():
+			var mat := mesh.surface_get_material(i)
+			if mat and mat.resource_name == "Cati" and mat is StandardMaterial3D:
+				var yeni := (mat as StandardMaterial3D).duplicate() as StandardMaterial3D
+				yeni.albedo_color = Color(0.72, 0.76, 0.82)
+				(mi as MeshInstance3D).set_surface_override_material(i, yeni)
 	for x in [-34.0, 34.0]:
 		var b := _model("res://assets/modeller/bayrak.glb")
 		b.position = Vector3(x, 0, KALE_Z)
@@ -627,10 +636,10 @@ func _dunya_kur() -> void:
 	# Kamera: oyuncunun arkasından kaleye; ekran genişliği ne olursa olsun kale sığsın
 	kamera = Camera3D.new()
 	kamera.keep_aspect = Camera3D.KEEP_WIDTH
-	kamera.fov = 36.0
+	kamera.fov = 30.0
 	kamera.far = 300.0
 	add_child(kamera)
-	kamera.look_at_from_position(Vector3(0.35, 1.65, 4.6), Vector3(0, 1.2, KALE_Z))
+	kamera.look_at_from_position(Vector3(0.45, 2.9, 7.0), Vector3(0, 1.0, KALE_Z))
 	kamera.current = true
 
 
