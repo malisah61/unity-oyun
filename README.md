@@ -1,18 +1,19 @@
 # Penaltı Ustası 3D (Godot)
 
-Telefonda oynanan 3D penaltı oyunu. Ekranda parmağını yukarı doğru kaydır:
-yön sağ/sol, kaydırma uzunluğu yüksekliği, hızın da şut gücünü belirler.
-5 şutta en çok golü atmaya çalış; her golde kaleci daha iyi tahmin eder.
+Telefonda oynanan 3D penaltı oyunu. Parmağını yukarı doğru kaydır: sağa/sola çekmek yönü,
+kaydırma uzunluğu yüksekliği, kaydırma hızı şutun gücünü belirler. Kaydırırken nişan noktaları
+topun gideceği yolu gösterir. 5 şutluk seride kaleciyi geç; her golde kaleci daha iyi tahmin eder.
 
-## APK nasıl alınır
-Her `main` gönderiminde GitHub Actions oyunu bulutta derler.
-**Actions** sekmesi → son çalıştırma → en altta **PenaltiUstasi-APK** → indir, zip'i aç, APK'yı telefona kur.
-(Bilinmeyen kaynaklardan yüklemeye izin vermen gerekebilir.)
+**APK:** https://github.com/malisah61/unity-oyun/releases/download/son-surum/PenaltiUstasi.apk
 
-Lisans ya da bilgisayara kurulum gerekmez.
+## Nasıl çalışıyor
+- `main.gd` — oyunun tamamı
+- `tools/blender/` — Blender betikleri: futbolcu/kaleci dönüştürme, top, kale, tribün, köşe bayrağı
+- `assets/modeller/` — Blender'ın ürettiği glb modeller
+- `.github/workflows/blender.yml` — Blender'ı bulutta çalıştırıp modelleri üretir
+- `.github/workflows/android.yml` — APK'yı derleyip yukarıdaki linke yükler
+- `.github/workflows/onizleme.yml` — oyunu bulutta açıp `onizleme/oyun/` ekran görüntülerini alır
 
-## Dosyalar
-- `main.gd` — oyunun tamamı (sahne kodla kuruluyor)
-- `main.tscn`, `project.godot` — Godot proje dosyaları
-- `export_presets.cfg` — Android dışa aktarma ayarı
-- `.github/workflows/android.yml` — bulut derleme
+## Emeği geçenler (hepsi CC0)
+- Karakterler: KayKit Adventurers — Kay Lousberg (kaylousberg.com)
+- Çim dokusu ve gökyüzü: Poly Haven (polyhaven.com)
