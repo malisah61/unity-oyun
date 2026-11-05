@@ -1,0 +1,56 @@
+name: Blender Modelleri Üret
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/blender/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: blender
+  cancel-in-progress: true
+
+jobs:
+  modelle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Blender önbelleği
+        id: onbellek
+        uses: actions/cache@v4
+        with:
+          path: blender
+          key: blender-4.2.3
+
+      - name: Blender'ı indir
+        if: steps.onbellek.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://download.blender.org/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz -o b.tar.xz
+          mkdir blender && tar -xf b.tar.xz -C blender --strip-components=1 && rm b.tar.xz
+
+      - name: Gerekli kütüphaneler
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libxi6 libxkbcommon0 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 > /dev/null
+
+      - name: Saha nesneleri
+        run: ./blender/blender -b --python tools/blender/saha.py -- assets/modeller onizleme 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
+
+      - name: Futbolcu
+        run: ./blender/blender -b --python tools/blender/futbolcu.py -- assets/karakterler/Rogue.glb assets/modeller/oyuncu.glb onizleme/oyuncu "#c8102e" "#ffffff" "#c8102e" "#1a1a1a" 0 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
+
+      - name: Kaleci
+        run: ./blender/blender -b --python tools/blender/futbolcu.py -- assets/karakterler/Barbarian.glb assets/modeller/kaleci.glb onizleme/kaleci "#f2c500" "#1a1a1a" "#f2c500" "#1a1a1a" 1 2>&1 | grep -vE "^(Fra:|Saved:|\s*Time:)" | tail -60
+
+      - name: Depoya kaydet
+        run: |
+          ls -la assets/modeller onizleme
+          git config user.name "github-actions[bot]"
+          git config user.email "41898732+github-actions[bot]@users.noreply.github.com"
+          git add assets/modeller onizleme
+          git commit -m "Blender: modeller ve önizlemeler güncellendi" || echo "değişiklik yok"
+          git pull --rebase -q
+          git push
