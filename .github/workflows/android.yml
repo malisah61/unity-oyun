@@ -1,0 +1,55 @@
+name: Android APK Derle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Android ayarlarını hazırla
+        run: |
+          export HOME=/root
+          SDK="${ANDROID_HOME:-/usr/lib/android-sdk}"
+          echo "Android SDK: $SDK"
+          keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android \
+            -keystore /root/ci-debug.keystore -storepass android \
+            -dname "CN=Android Debug,O=Android,C=US" -validity 9999
+          mkdir -p /root/.config/godot
+          for f in /root/.config/godot/editor_settings-4.tres /root/.config/godot/editor_settings-4.3.tres; do
+            if [ ! -f "$f" ]; then printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n' > "$f"; fi
+            sed -i '/^export\/android\/\(android_sdk_path\|debug_keystore\|debug_keystore_user\|debug_keystore_pass\)/d' "$f"
+            {
+              echo "export/android/android_sdk_path = \"$SDK\""
+              echo 'export/android/debug_keystore = "/root/ci-debug.keystore"'
+              echo 'export/android/debug_keystore_user = "androiddebugkey"'
+              echo 'export/android/debug_keystore_pass = "android"'
+            } >> "$f"
+          done
+          ls /root/.local/share/godot/export_templates/
+
+      - name: Derle
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /root/ci-debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
+        run: |
+          export HOME=/root
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/lib/android-sdk}"
+          mkdir -p build/android
+          godot --headless --editor --quit || true
+          godot --headless --verbose --export-debug "Android" build/android/PenaltiUstasi.apk
+          ls -la build/android
+          test -f build/android/PenaltiUstasi.apk
+
+      - name: APK'yı yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: PenaltiUstasi-APK
+          path: build/android/PenaltiUstasi.apk
