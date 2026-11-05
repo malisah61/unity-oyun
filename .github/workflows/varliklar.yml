@@ -1,0 +1,35 @@
+name: 3D Varlıkları İndir
+
+on:
+  workflow_dispatch:
+    inputs:
+      kenney:
+        description: "Kenney paketleri (virgülle, boş = varsayılan liste)"
+        default: ""
+      ph_tex:
+        description: "Poly Haven doku adları (virgülle)"
+        default: ""
+      ph_hdr:
+        description: "Poly Haven gökyüzü adları (virgülle)"
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  indir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: İndir
+        env:
+          PH_TEX: ${{ inputs.ph_tex }}
+          PH_HDR: ${{ inputs.ph_hdr }}
+        run: python3 tools/varlik_indir.py "${{ inputs.kenney }}"
+      - name: Depoya kaydet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898732+github-actions[bot]@users.noreply.github.com"
+          git add assets
+          git commit -m "3D varlıklar indirildi (CC0)" || echo "değişiklik yok"
+          git push
