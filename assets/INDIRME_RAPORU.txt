@@ -1,9 +1,5 @@
-kenney/mini-characters: zip linki yok
-kenney/animated-characters-2: zip linki yok
-kenney/animated-characters-1: zip linki yok
-kenney/blocky-characters: zip linki yok
-kenney/mini-arena: zip linki yok
-kenney/sports-pack: zip linki yok
-kenney/nature-kit: zip linki yok
-polyhaven çim dokuları: 
+kenney/mini-characters: zip linki yok; ipuçları: []
+kenney/animated-characters-2: zip linki yok; ipuçları: []
+kenney/mini-arena: zip linki yok; ipuçları: []
+polyhaven çim dokuları: aerial_grass_rock, grass_concrete_pavement, grass_ground, grass_path_2, grass_path_3, grassy_cobblestone, leafy_grass, sparse_grass, withered_grass
 polyhaven gökyüzü adayları: alps_field, aristea_wreck_puresky, autumn_field, autumn_field_puresky, autumn_hilly_field, autumn_meadow, belfast_open_field, belfast_sunset_puresky, bloem_field_sunrise, citrus_orchard_puresky, citrus_orchard_road_puresky, derelict_airfield_01, derelict_airfield_02, drackenstein_quarry_puresky, drakensberg_solitary_mountain_puresky, dry_field, dry_hay_field, dry_meadow, dry_orchard_meadow, evening_field, evening_meadow, evening_road_01_puresky, farm_field, farm_field_puresky, hausdorf_clear_sky, hausdorf_meadow, hilly_terrain_01_puresky, hochsal_field, industrial_sunset_02_puresky, industrial_sunset_puresky, kloofendal_28d_misty_puresky, kloofendal_38d_partly_cloudy_puresky, kloofendal_43d_clear_puresky, kloofendal_48d_partly_cloudy_puresky, kloofendal_misty_morning_puresky, kloofendal_overcast_puresky, kloppenheim_01_puresky, kloppenheim_02_puresky, kloppenheim_03_puresky, kloppenheim_05_puresky
